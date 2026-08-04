@@ -1,0 +1,91 @@
+{
+  "mcpServers": {
+    "wxdi-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "ibm-watsonx-data-intelligence-mcp-server",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "DI_SERVICE_URL": "https://api.<region>.dai.cloud.ibm.com",
+        "DI_APIKEY": "<your-ibm-cloud-api-key>",
+        "DI_ENV_MODE": "SaaS"
+      },
+      "disabled": false,
+      "alwaysAllow": [
+        "search_data_products",
+        "get_data_product_details",
+        "get_data_product_contract",
+        "get_data_contract_test_results",
+        "get_data_product_subscription_details",
+        "search_data_product_subscriptions",
+        "list_data_product_contract_templates",
+        "list_data_product_business_domains",
+        "search_governance_artifacts",
+        "explain_glossary_artifact",
+        "get_asset_glossary_artifacts",
+        "get_glossary_csv_schema",
+        "search_data_protection_rules",
+        "get_data_protection_rule_schema",
+        "list_data_quality_rules",
+        "get_data_quality_for_asset",
+        "search_lineage_assets",
+        "get_lineage_graph",
+        "get_lineage_comparison",
+        "list_lineage_versions",
+        "convert_asset_to_lineage_id",
+        "list_metadata_enrichment_asset_jobs",
+        "get_metadata_enrichment_job_status",
+        "list_enrichment_categories",
+        "search_metadata_import",
+        "list_containers",
+        "find_container",
+        "search_asset",
+        "get_asset_details",
+        "search_connection",
+        "search_data_source_definition",
+        "search_user_groups_roles",
+        "dynamic_query_search",
+        "get_semantic_model",
+        "generate_sql_query",
+        "generate_reporting_sql_query",
+        "execute_reporting_select_query",
+        "check_if_onboarding_job_is_completed",
+        "get_my_workflow_inbox_tasks",
+        "get_my_workflows",
+        "list_business_terms_by_search_term",
+        "list_data_classes_by_search_term",
+        "list_user_tasks_approval_data_for_artifact",
+        "list_connection_paths"
+      ]
+    },
+    "watsonxdata": {
+      "command": "uvx",
+      "args": [
+        "ibm-watsonxdata-mcp-server",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "WATSONX_DATA_BASE_URL": "https://<your-instance>.lakehouse.saas.ibm.com/lakehouse/api",
+        "WATSONX_DATA_API_KEY": "<your-ibm-cloud-api-key>",
+        "WATSONX_DATA_INSTANCE_ID": "<your-instance-crn>"
+      },
+      "alwaysAllow": [
+        "get_instance_details",
+        "list_engines",
+        "list_schemas",
+        "list_tables",
+        "describe_table",
+        "execute_select",
+        "explain_query",
+        "explain_analyze_query",
+        "get_ingestion_job",
+        "list_ingestion_jobs",
+        "get_spark_application_status",
+        "list_spark_applications"
+      ]
+    }
+  }
+}
