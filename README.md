@@ -15,14 +15,14 @@ cd lab-2867
 
 ### Step 2 — Configure the MCP servers
 
-The file `bob/mcp.json.template` contains the MCP server configuration with placeholders for your credentials.
+The file `.bob/mcp.json.template` contains the MCP server configuration with placeholders for your credentials.
 
 1. Copy the template:
    ```bash
-   cp bob/mcp.json.template bob/mcp.json
+   cp .bob/mcp.json.template .bob/mcp.json
    ```
 
-2. Open `bob/mcp.json` and fill in the placeholder values — the facilitator will hand these out on the day:
+2. Open `.bob/mcp.json` and fill in the placeholder values — the facilitator will hand these out on the day:
 
    | Block | Placeholder | Value |
    |-------|-------------|-------|
@@ -34,9 +34,9 @@ The file `bob/mcp.json.template` contains the MCP server configuration with plac
 
    > Leave `"disabled": true` on the `wxdi-mcp-server` block for now — you will remove it in Exercise 2.
 
-3. Copy `bob/mcp.json` into your Bob config directory:
+3. Copy `.bob/mcp.json` into your Bob config directory:
    ```bash
-   cp bob/mcp.json ~/.bob/mcp.json   # adjust path to your Bob installation
+   cp .bob/mcp.json ~/.bob/mcp.json   # adjust path to your Bob installation
    ```
 
 ### Step 3 — Install the custom Bob modes
@@ -44,7 +44,7 @@ The file `bob/mcp.json.template` contains the MCP server configuration with plac
 Copy the custom mode definitions into your Bob config directory:
 
 ```bash
-cp bob/custom_modes.yaml ~/.bob/custom_modes.yaml   # adjust path if needed
+cp .bob/custom_modes.yaml ~/.bob/custom_modes.yaml   # adjust path if needed
 ```
 
 This adds three modes to Bob:
