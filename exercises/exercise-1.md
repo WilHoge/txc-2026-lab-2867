@@ -1,40 +1,58 @@
-# Exercise 1 — Raw Data Only
+## Exercise 1 — Access to Planned Flight Information
 
-**Goal:** Experience what an AI assistant can (and cannot) do with raw, uncontextualized data.
+**Goal:** Explore what the AI agent can answer when it has access only to the planned flight data stored in watsonx.data. In this phase, the agent does not have access to the governance metadata or real-time Kafka messages.
 
-Bob has SQL access to the flight data in `iceberg_catalog.lab2867` but has **no metadata context**. The watsonx.data Intelligence MCP server is disabled. Status codes are opaque numbers — no glossary, no data classes.
+**Mode:** Select **Flight-info** in Bob.
 
-**Mode:** use the **Flight-Info** mode.
+### How to run the exercise
 
----
+Ask the following questions one by one in Bob. Submit each question and review both the answer and the tools Bob used.
 
-## Questions to ask Bob
+### Question 1.1
 
-Ask these questions one by one in Bob Chat:
+> I am flying to New York. Where and when is my flight?
 
-1. **"I am flying to New York. Where and when is my flight?"**
+#### What to observe
 
-2. **"What is the status of flight UA892?"**
+- Bob uses the watsonx.data MCP server to discover the available tables and their structures.
+- Bob queries the planned flight data to find flights to New York.
+- The available table data does not explain the meaning of the numeric status codes.
+- Bob should provide the flight details it can retrieve and clearly state that the status information cannot be interpreted with the available context.
 
-3. **"What is the status of flight DL404?"**
+### Question 1.2
 
-4. **"What airline operates flight UA892 and where is their desk?"**
+> What is the status of flight DL404?
 
-5. **"What gate should I go to for flight DL404 to JFK?"**
+#### What to observe
 
----
+- Bob retrieves the status value from the flight data.
+- The result contains a numeric status code.
+- Bob cannot determine the business meaning of that code because the governance layer is not available.
+- The mode rules prevent Bob from guessing or supplementing the answer from general knowledge.
+- To inspect the SQL query, expand **Ran Execute Select (watsonxdata)** in Bob.
 
-## What to observe
+### Question 1.3
 
-- For question 1: Bob finds three New York flights (DL404 → JFK, UA892 → EWR, AA334 → LGA) and returns gate and departure time — but shows raw `status_code` numbers. No human-readable status.
-- For questions 2 and 3: Bob returns a numeric code (e.g. `3`). It may guess the meaning, but it cannot be certain. This is the core limitation of Exercise 1.
-- For question 4: Bob can join the `airlines` table and return the desk location — showing the limit is code-specific, not a general SQL failure.
-- For question 5: Bob returns the planned gate (B12) — the static answer is correct. The `status_code 3` (Delayed) is present but unlabelled.
+> What airline operates flight UA892 and where is their desk?
 
----
+#### What to observe
 
-## Reflection
+- Bob can answer questions that require information from more than one table.
+- It discovers the required table structures and combines the available flight and airline data.
+- This shows that the limitation in this phase is missing business meaning for coded values, not a general inability to query or join data.
+- To review the table discovery steps, expand the relevant **Called MCP** entries in Bob.
 
-> Raw data without meaning is not AI-ready. Numeric codes are invisible walls between data and decision.
+### Question 1.4
+
+> What tables do you have access to?
+
+#### What to observe
+
+- Bob returns the tables available in the watsonx.data lakehouse under catalog `iceberg_catalog` and schema `lab2867`.
+- This question demonstrates that Bob can also answer technical questions about the connected data source.
+
+### Reflection
+
+The planned flight data provides an authoritative source for flight numbers, destinations, departure times, gates, and airline information. However, numeric codes remain ambiguous without the governance metadata that explains their business meaning.
 
 When you are ready, continue with [exercise-2.md](exercise-2.md).

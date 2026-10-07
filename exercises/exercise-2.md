@@ -1,57 +1,57 @@
-# Exercise 2 — Adding Metadata Context
+## Exercise 2 — Access to Flight Information and Governance Data
 
-**Goal:** Connect watsonx.data Intelligence to Bob and experience how metadata transforms the same data into meaningful answers.
+**Goal:** Explore how access to governance metadata helps the AI agent interpret the planned flight data. In this phase, Bob can query both watsonx.data and watsonx.data Intelligence, but it does not yet use the real-time Kafka messages.
 
-**Mode:** switch to the **Flight-Info with Metadata** mode.
+**Mode:** Select **Flight-info with Metadata** in Bob.
 
----
+### How to run the exercise
 
-## Step 1 — Enable the Intelligence MCP server
+Ask the following questions one by one in the same Bob conversation. Submit each question and review both the answer and the tools Bob used.
 
-1. Open `bob/mcp-servers.json` in a text editor
-2. Find the `watsonx-intelligence` entry
-3. **Delete** the line `"disabled": true`
-4. Save the file
-5. **Restart Bob** and switch to the **Flight-Info with Metadata** mode
+### Question 2.1
 
-Bob now has access to Business Terms, Glossary entries, and Data Classes from watsonx.data Intelligence.
+> What is the status of flight DL404?
 
----
+#### What to observe
 
-## Questions to ask Bob
+- Bob recognizes that governance information is available.
+- It queries the governance layer for information about the flight status codes.
+- Bob maps status code `3` to **Delayed** and provides a more precise, human-readable answer.
+- Compare this answer with the result from Exercise 1, where the numeric code could not be interpreted.
 
-Repeat the same flight-status questions from Exercise 1 — and compare the answers:
+### Question 2.2
 
-6. **"What is the status of flight UA892?"** ← same as question 2 in Exercise 1
+> Which flights are currently boarding?
 
-7. **"What is the status of flight DL404?"** ← same as question 3 in Exercise 1
+#### What to observe
 
-8. **"Which flights are currently boarding?"**
+- Bob uses the governance information to determine which numeric status code means **Boarding**.
+- It then queries the planned flight data using that code.
+- Bob may reuse status-code information already retrieved in the current conversation.
+- The planned data contains one flight that is currently marked as boarding.
 
-9. **"I am flying to New York. Where and when is my flight?"** ← same as question 1 in Exercise 1
+### Question 2.3
 
----
+> I am flying to New York. Where and when is my flight?
 
-## What to observe
+#### What to observe
 
-- Questions 6 and 7 are identical to Exercise 1 — Bob now resolves the numeric `status_code` into a human-readable label and explanation (e.g. *"DELAYED — Flight is delayed, check current departure time."*)
-- Question 8: Bob identifies flights with `status_code = 1` (BOARDING) without guessing — the Business Term *Status Code* tells it exactly what code 1 means
-- Question 9: Bob returns all three New York options (DL404 → JFK, UA892 → EWR, AA334 → LGA) with full status labels instead of raw numbers
+- Bob returns the available New York flight options with understandable status information.
+- The answer is more useful than in Exercise 1 because the numeric status codes can now be interpreted.
+- Bob is still querying only the static flight tables. Gate assignments and flight status may therefore no longer reflect the current airport situation.
 
----
+### Question 2.4
 
-## Reflection
+> Give me a list of possible status codes for flights.
 
-> Metadata is the bridge between technical data and human meaning. The same question, asked twice in two different modes, gives a fundamentally different quality of answer.
+#### What to observe
 
----
+- Bob queries the governance metadata directly.
+- It returns the available flight status codes together with their meanings.
+- This demonstrates that Bob can use watsonx.data Intelligence not only to interpret query results, but also to answer questions about the metadata itself.
 
-## Optional Deepdive
+### Reflection
 
-Ask Bob: **"What is the difference between `dep_planned` and `new_dep`?"**
-
-Observe how Bob looks up both fields in the glossary: *dep_planned* maps to **Planned Departure** — the original schedule that never changes. *new_dep* maps to **New Departure** — the revised time from the latest real-time event (null if no update has been received). This demonstrates that metadata explains the *semantics* of fields, not just their names.
-
----
+The governance layer turns technical values into business meaning. Bob can now explain flight status codes and use natural-language concepts such as **Boarding** when querying the planned data. However, the result is still based on static information. Real-time events are added in the next exercise.
 
 When you are ready, continue with [exercise-3.md](exercise-3.md).

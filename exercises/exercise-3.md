@@ -1,128 +1,118 @@
-# Exercise 3 — Adding Real-Time Context
+## Exercise 3 — Access to Complete Flight Context
 
-**Goal:** Understand that even perfect metadata cannot replace current state. Real-time events change the answer.
+**Goal:** Explore how real-time events complement planned flight data and governance metadata. In this phase, Bob can use watsonx.data, watsonx.data Intelligence, and live Kafka messages to answer questions based on the latest available information.
 
-The facilitator is now firing live events into the system via Kafka. Flight statuses, gates, and departure times are changing as you work through this exercise.
+**Mode:** Select **Flight-info with Complete Context** in Bob.
 
-**Mode:** switch to the **Flight-Info with Complete Context** mode.
+### How to run the exercise
 
----
+Ask the following questions at the indicated points in the event sequence. The instructor will show which Kafka messages have already been sent. Review both Bob's answer and the tools it used.
 
-## The Story
+### Question 3.1 — No message required
 
-You are booked on **UA892 → Newark (EWR)**. Three New York flights exist in the schedule:
+> I am flying to New York — show me all options.
 
-| Flight | Destination | Planned Gate | Initial Status |
-|--------|-------------|-------------|----------------|
-| DL404  | JFK         | B12         | DELAYED        |
-| UA892  | EWR         | B4          | DELAYED        |
-| AA334  | LGA         | C11         | ON TIME        |
+#### What to observe
 
-Watch what happens to your flight — and what Bob can tell you at each step.
+- Bob recognizes that it has access to the planned data, governance metadata, and real-time messages.
+- It queries the available context layers and combines the results.
+- If no Kafka messages have arrived, the answer is based on the planned flight data.
+- Your result may differ if live messages are already present.
 
----
+### Question 3.2 — After message 1
 
-## Before the first event — baseline
+> Why does UA892 have a delay?
 
-10. **"I am flying to New York — show me all options."**
+#### What to observe
 
-    Bob lists all three NY flights with static data. No Kafka events have fired yet.
+- Bob combines the planned flight data with the live update for UA892.
+- It uses the governance metadata to interpret reason code `5` as **Late arriving aircraft from previous leg**.
 
-11. **"What gate should I go to for flight UA892?"**
+### Question 3.3 — After message 2
 
-    Bob answers Gate **B4** from the static `flights` table.
+> What gate should I go to for flight DL404?
 
----
+#### What to observe
 
-## After Event 1 — UA892 first delay (+30 min)
+- Bob finds a live gate-change message for DL404.
+- It uses the current gate from the real-time event rather than relying only on the planned gate.
 
-12. **"Why does UA892 have a delay?"**
+### Question 3.4 — After message 3
 
-    Bob reads the Kafka event: reason code 5 = *"Late arriving aircraft from previous leg"*. Departure pushed back +30 min. The metadata resolves the reason code to plain English.
+> How much total delay does UA892 have now?
 
----
+#### What to observe
 
-## After Event 2 — DL404 gate change B12 → C7
+- Multiple delay messages exist for UA892.
+- Bob uses the latest applicable message to determine the current delay.
 
-13. **"What gate should I go to for flight DL404?"**
+### Question 3.5 — Before message 9
 
-    Bob now answers Gate **C7** — the live gate-change event overrides the static B12. Without Kafka, the answer would still be B12.
+> Is flight AA101 to Dallas still operating?
 
----
+#### What to observe
 
-## After Event 3 — UA892 second delay (+20 min more)
+- Before message 9, the available information indicates that AA101 is still operating.
+- This creates a baseline for comparison after the cancellation message arrives.
 
-14. **"How much total delay does UA892 have now?"**
+### Question 3.6 — After message 4 and before message 10
 
-    Bob reads the latest Kafka event: cumulative +50 min delay. New reason: *reason code 4 = "Crew availability or rest requirement"*. Both reason codes are decoded via metadata.
+> What is the current status of my flight UA892?
 
----
+#### What to observe
 
-## After Events 4–9 — background activity
+- Bob combines the available updates for UA892.
+- At this point, the flight has a delay, a gate change, and an updated reason for the delay.
 
-15. **"Which flights are boarding right now?"**
+### Question 3.7 — After message 4
 
-    Bob reads the BOARDING events: NK712 (Gate A8) and SW210 (Gate A4) are boarding.
+> Which flights are boarding right now?
 
-16. **"Is flight AA101 to Dallas still operating?"**
+#### What to observe
 
-    After event 9: Bob reports AA101 as **CANCELLED**.
+- Bob evaluates the live messages to identify flights currently boarding.
+- Depending on which messages have arrived, the answer contains two or three boarding flights.
 
----
+### Question 3.8 — Anytime
 
-## ⭐ After Event 10 — UA892 CANCELLED (climax)
+> Show me a current overview of all flights.
 
-17. **"What is the current status of my flight UA892?"**
+#### What to observe
 
-    Bob reads the most recent Kafka event: UA892 is **CANCELLED**. Status code 2 resolved via metadata: *"Flight has been cancelled — contact airline for rebooking."*
+- Bob combines all information available at the time of the query.
+- The overview reflects planned flight information, governance meaning, and the latest real-time updates.
 
-18. **"My flight UA892 was cancelled — what other flights to New York are there?"**
+### Question 3.9 — After message 10
 
-    Bob identifies JFK / EWR / LGA as New York airports and returns: **DL404 → JFK** (slightly delayed, Gate C7) and **AA334 → LGA** (on time, Gate C11) — all status labels decoded via metadata.
+> What is the current status of my flight UA892?
 
-19. **"Which of the two remaining New York flights departs soonest?"**
+#### What to observe
 
-    Bob compares current departure times: DL404 is earlier but delayed; AA334 is on time. AA334 is the safer rebooking option.
+- Bob uses the most recent event and reports that UA892 is cancelled.
+- Compare this answer with Question 3.6, which was asked before message 10.
 
----
+### Question 3.10 — After message 10
 
-## After Event 11 — AA334 boarding confirmed
+> My flight UA892 was cancelled — what other flights to New York are there?
 
-20. **"When do I need to be at the gate for AA334?"**
+#### What to observe
 
-    Bob reads the BOARDING event for AA334: Gate C11, boarding now. Advises to go immediately.
+- Bob searches the available flights for alternatives to New York.
+- It reports the current status of the alternatives using all available context layers.
 
----
+### Question 3.11 — After message 11
 
-## What to observe
+> Is there food near the gate for AA334, and do I still have time to grab something?
 
-- The same question (*"What gate for DL404?"*) gives different answers before and after Event 2 — the static data has not changed, but the live Kafka event overrides it
-- At the climax (Event 10), Bob uses all three layers simultaneously: SQL data for the flight list, Intelligence metadata to decode status codes, Kafka events for current state
-- The rebooking scenario is resolved by Bob's own reasoning — no hard-coded lookup is needed
+#### What to observe
 
----
+- Bob combines gate information with the latest boarding information for AA334.
+- Because boarding has already begun, it recommends going to the gate rather than spending time getting food.
 
-## Reflection
+### Reflection
 
-> Real-time context is the final layer. It answers "what is true *right now*" — something that even the richest metadata cannot provide alone.
->
-> All three layers together — raw data, metadata, real-time events — are what make an AI assistant genuinely useful at the moment of decision.
+Planned data provides the authoritative schedule, governance metadata explains what the data means, and real-time events show what is happening now. Together, these layers allow Bob to answer using the latest known operational context rather than an outdated snapshot.
 
----
+### You are done!
 
-## Optional Deepdive
-
-- Ask Bob: **"Is there food near the gate for AA334, and do I still have time to grab something?"**  
-  Bob checks the `gates` table for Gate C11 amenities and the BOARDING event time.
-
-- Ask Bob: **"Which flights are delayed because of weather?"**  
-  After event 12: SW388 delayed +10 min, reason code 1 = *"Weather conditions at origin or destination"* — decoded via metadata.
-
-- Ask Bob: **"Has anything changed for the Delta flight to Los Angeles?"**  
-  After event 8: DL872 gate changed from T1 to T3.
-
----
-
-## You are done!
-
-Feel free to ask Bob any other flight-related question and explore what it can (and cannot) answer.
+Feel free to ask Bob additional flight-related questions and explore what it can and cannot answer from the available context.
