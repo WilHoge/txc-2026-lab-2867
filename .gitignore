@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Bob MCP config — contains secrets, use .bob/mcp.json.template instead
+.bob/mcp.json
